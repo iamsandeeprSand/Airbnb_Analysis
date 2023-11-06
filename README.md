@@ -20,15 +20,15 @@ This project aims to perform an in-depth analysis of Airbnb data using MongoDB A
 - **Streamlit**: Creation of the graphical user interface.
 
 ## Workflow
-1. **Database Connection**
+1. **Database Connection**:
       Establish a connection to the MongoDB Atlas to retrieve the Airbnb dataset.
-2. **Data Cleaning and Prep**
+2. **Data Cleaning and Prep**:
       Clean the data by handling missing values, removing duplicates, and ensuring consistency for EDA and visualization.
-3. **Streamlit Application**
+3. **Streamlit Application**:
       Develop an interactive web app using geospatial data for Airbnb.
-4. **Price Analysis**
+4. **Price Analysis**:
       Analyze pricing variations across locations, property types, and seasons. Create dynamic plots for trend exploration.
-5. **Dashboard Creation**
+5. **Dashboard Creation**:
       Utilize Tableau or Power BI to create a comprehensive dashboard presenting key insights from the analysis.
 
 ## Dashboard & Visualizations
