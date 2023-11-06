@@ -10,28 +10,33 @@ The primary goal is to perform an in-depth analysis of Airbnb data utilizing Mon
 ### Airbnb Dashboard
 [Click here to view the interactive dashboard.](https://app.powerbi.com/links/KhzrX20jSZ?ctid=1f8ca2d2-8b29-4086-8354-e9b31ca9d140&pbi_source=linkShare)
 
-## Libraries/Modules
-- **Plotly, Seaborn**: Used for plotting and visualizing the data.
+## Overview
+This project aims to perform an in-depth analysis of Airbnb data using MongoDB Atlas. It includes data cleaning, geospatial visualizations, and dynamic plots to gain insights into pricing variations, availability patterns, and location-based trends.
+
+### Libraries/Modules
+- **Plotly, Seaborn**: For plotting and visualizing the data.
 - **Pandas**: For data cleaning and manipulation.
-- **Pymongo**: Connecting and interacting with MongoDB Atlas.
-- **Streamlit**: Creating the graphical user interface.
+- **Pymongo**: Connecting with MongoDB Atlas.
+- **Streamlit**: Creation of the graphical user interface.
 
 ## Workflow
+1. **Database Connection**:
+   Establish a connection to the MongoDB Atlas to retrieve the Airbnb dataset.
+2. **Data Cleaning and Prep**:
+   Clean the data by handling missing values, removing duplicates, and ensuring consistency for EDA and visualization.
+3. **Streamlit Application**:
+   Develop an interactive web app using geospatial data for Airbnb.
+4. **Price Analysis**:
+   Analyze pricing variations across locations, property types, and seasons. Create dynamic plots for trend exploration.
+5. **Dashboard Creation**:
+   Utilize Tableau or Power BI to create a comprehensive dashboard presenting key insights from the analysis.
 
-### Step 1: Database Connection
-Establish a connection to the MongoDB Atlas database to retrieve the Airbnb dataset.
+## Dashboard & Visualizations
+- **Streamlit App**:
+  Create interactive maps showcasing geospatial data from the Airbnb dataset.
+- **Tableau/Power BI Dashboard**:
+  Display key insights through various visualizations, e.g., maps, charts, and tables.
 
-### Step 2: Data Cleaning and Preparation
-Clean the Airbnb dataset by handling missing values, removing duplicates, and ensuring data consistency for Exploratory Data Analysis (EDA) and visualization tasks.
-
-### Step 3: Streamlit Application
-Develop a Streamlit web application that utilizes geospatial data from Airbnb to create interactive maps.
-
-### Step 4: Price Analysis
-Utilize the cleaned data to analyze and visualize pricing variations across locations, property types, and seasons. Create dynamic plots and charts to explore price trends, outliers, and correlations with other variables.
-
-### Step 5: Dashboard Creation
-Use Tableau or Power BI to craft a comprehensive dashboard displaying key insights derived from the analysis. This dashboard will feature various visualizations like maps, charts, and tables to present a comprehensive view of the Airbnb dataset and its patterns.
 
 ## Dashboard Snapshot
 
