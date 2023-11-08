@@ -52,7 +52,4 @@ This project aims to perform an in-depth analysis of Airbnb data using MongoDB A
 ![image](https://github.com/iamsandeeprSand/Airbnb_Analysis/assets/139530620/014699f3-f9cc-4cb4-97ab-4fa46bcd6995)
 ![image](https://github.com/iamsandeeprSand/Airbnb_Analysis/assets/139530620/1e128c97-3cf2-40a5-99f7-efe6bce44dca)
 
-![image](https://github.com/iamsandeeprSand/Airbnb_Analysis/assets/139530620/c9a64ee4-8834-4f2d-a28d-026585a49bb4)
-![image](https://github.com/iamsandeeprSand/Airbnb_Analysis/assets/139530620/555a8362-6a0a-4319-94c9-ddc20ea6006e)
-![image](https://github.com/iamsandeeprSand/Airbnb_Analysis/assets/139530620/6e1b215a-8bc5-4529-9b47-801e9fe39d17)
 
