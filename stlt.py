@@ -2,6 +2,8 @@ import pandas as pd
 import pymongo
 import psycopg2
 import plotly.express as px
+import geopandas as gpd
+import plotly.express as px
 import streamlit as st
 from streamlit_option_menu import option_menu
 pd.set_option('display.max_columns', None)
@@ -33,7 +35,7 @@ def streamlit_config():
 
 
 class data_collection:
-    sand = pymongo.MongoClient("MONGODB CONNECTION LINK")
+    sand = pymongo.MongoClient("mongodb+srv://iam_sandeep_r:rsandeep@cluster0.p8sldxv.mongodb.net/?retryWrites=true&w=majority")
     db = sand['sample_airbnb']
     col = db['listingsAndReviews']
 
@@ -427,9 +429,54 @@ class feature:
         data = data.rename_axis('S.No')
         data.index = data.index.map(lambda x: '{:^{}}'.format(x, 10))
         return data
-#for feature analysis part in streamlit part
-    def feature_analysis():
 
+    def feature_analysis():
+        # PostgreSQL connection
+        conn = psycopg2.connect(
+            host="localhost",
+            user="postgres",
+            password="sandeep",
+            port=5432,
+            database="PhonePe"
+        )
+
+        # Query the database
+        query = """SELECT country, AVG(price) AS average_price
+                    FROM airbnb
+                    GROUP BY country;"""
+
+        sand = conn.cursor()
+        sand.execute(query)
+        data = sand.fetchall()
+        conn.commit()
+
+        # Create a DataFrame from the fetched data
+        df = pd.DataFrame(data, columns=['country', 'average_price'])
+
+        # Read world countries shapefile
+        world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
+
+        # Merge the world data with the average_prices on 'name'
+        world = world.merge(df, how='left', left_on='name', right_on='country')
+
+        # Streamlit app
+        st.title('Average Prices per Country Map')
+
+        # Plotting the world map with hover functionality
+        fig = px.choropleth(
+            world,
+            geojson=world.geometry,
+            locations=world.index,
+            color='country',
+            hover_data={'average_price': True},
+            projection='natural earth',
+            title='Average Prices per Country'
+        )
+
+        #fig.update_geos(fitbounds="locations", visible=False)
+
+        # Display the map in Streamlit
+        st.plotly_chart(fig)      
         # vertical_bar chart
         property_type = feature.feature('property_type')
         plotly.vertical_bar_chart(df=property_type, x='property_type', y='count',
@@ -448,16 +495,7 @@ class feature:
             plotly.pie_chart(df=room_type, x='room_type',
                              y='count', title='Room Type', title_x=0.30)
 
-        # vertical_bar chart
-        tab1, tab2 = st.tabs(['Minimum Nights', 'Maximum Nights'])
-        with tab1:
-            minimum_nights = feature.feature('minimum_nights')
-            plotly.vertical_bar_chart(df=minimum_nights, x='y', y='count', text='percentage',
-                                      color='#5cb85c', title='Minimum Nights', title_x=0.43)
-        with tab2:
-            maximum_nights = feature.feature('maximum_nights')
-            plotly.vertical_bar_chart(df=maximum_nights, x='y', y='count', text='percentage',
-                                      color='#5cb85c', title='Maximum Nights', title_x=0.43)
+        
 
         # line chart
         cancellation_policy = feature.feature('cancellation_policy')
@@ -466,45 +504,6 @@ class feature:
                                         'top center', 'bottom center', 'middle right'],
                           title='Cancellation Policy', title_x=0.43)
 
-        # vertical_bar chart
-        accommodates = feature.feature('accommodates')
-        plotly.vertical_bar_chart(df=accommodates, x='y', y='count', text='percentage',
-                                  color='#5D9A96', title='Accommodates', title_x=0.43)
-
-        # vertical_bar chart
-        tab1, tab2, tab3 = st.tabs(['Bedrooms', 'Beds', 'Bathrooms'])
-        with tab1:
-            bedrooms = feature.feature('bedrooms')
-            plotly.vertical_bar_chart(df=bedrooms, x='y', y='count', text='percentage',
-                                      color='#5cb85c', title='Bedrooms', title_x=0.43)
-        with tab2:
-            beds = feature.feature('beds')
-            plotly.vertical_bar_chart(df=beds, x='y', y='count', text='percentage',
-                                      color='#5cb85c', title='Beds', title_x=0.43)
-        with tab3:
-            bathrooms = feature.feature('bathrooms')
-            plotly.vertical_bar_chart(df=bathrooms, x='y', y='count', text='percentage',
-                                      color='#5cb85c', title='Bathrooms', title_x=0.43)
-
-        # vertical_bar chart
-        tab1, tab2, tab3, tab4 = st.tabs(
-            ['Price', 'Cleaning Fee', 'Extra People', 'Guests Included'])
-        with tab1:
-            price = feature.feature('price')
-            plotly.vertical_bar_chart(df=price, x='y', y='count', text='percentage',
-                                      color='#5D9A96', title='Price', title_x=0.43)
-        with tab2:
-            cleaning_fee = feature.cleaning_fee()
-            plotly.vertical_bar_chart(df=cleaning_fee, x='y', y='count', text='percentage',
-                                      color='#5D9A96', title='Cleaning Fee', title_x=0.43)
-        with tab3:
-            extra_people = feature.feature('extra_people')
-            plotly.vertical_bar_chart(df=extra_people, x='y', y='count', text='percentage',
-                                      color='#5D9A96', title='Extra People', title_x=0.43)
-        with tab4:
-            guests_included = feature.feature('guests_included')
-            plotly.vertical_bar_chart(df=guests_included, x='y', y='count', text='percentage',
-                                      color='#5D9A96', title='Guests Included', title_x=0.43)
 
         # line chart
         host_response_time = feature.feature('host_response_time')
@@ -512,17 +511,6 @@ class feature:
                           textposition=['top center', 'top right',
                                         'top right', 'bottom left', 'bottom left'],
                           title='Host Response Time', title_x=0.43)
-
-        # vertical_bar chart
-        tab1, tab2 = st.tabs(['Host Response Rate', 'Host Listings Count'])
-        with tab1:
-            host_response_rate = feature.feature('host_response_rate')
-            plotly.vertical_bar_chart(df=host_response_rate, x='y', y='count', text='percentage',
-                                      color='#5cb85c', title='Host Response Rate', title_x=0.43)
-        with tab2:
-            host_listings_count = feature.feature('host_listings_count')
-            plotly.vertical_bar_chart(df=host_listings_count, x='y', y='count', text='percentage',
-                                      color='#5cb85c', title='Host Listings Count', title_x=0.43)
 
         # pie chart
         tab1, tab2, tab3 = st.tabs(
@@ -555,359 +543,6 @@ class feature:
             plotly.pie_chart(df=is_location_exact, x='is_location_exact', y='count',
                              title='Location Exact', title_x=0.37)
 
-        # vertical_bar,pie,map chart
-        tab1, tab2, tab3, tab4 = st.tabs(['Availability 30', 'Availability 60',
-                                          'Availability 90', 'Availability 365'])
-        with tab1:
-            availability_30 = feature.feature('availability_30')
-            plotly.vertical_bar_chart(df=availability_30, x='y', y='count', text='percentage',
-                                      color='#5cb85c', title='Availability 30', title_x=0.45)
-        with tab2:
-            availability_60 = feature.feature('availability_60')
-            plotly.vertical_bar_chart(df=availability_60, x='y', y='count', text='percentage',
-                                      color='#5cb85c', title='Availability 60', title_x=0.45)
-        with tab3:
-            availability_90 = feature.feature('availability_90')
-            plotly.vertical_bar_chart(df=availability_90, x='y', y='count', text='percentage',
-                                      color='#5cb85c', title='Availability 90', title_x=0.45)
-        with tab4:
-            availability_365 = feature.feature('availability_365')
-            plotly.vertical_bar_chart(df=availability_365, x='y', y='count', text='percentage',
-                                      color='#5cb85c', title='Availability 365', title_x=0.45)
-
-        # vertical_bar,pie,map chart
-        tab1, tab2, tab3 = st.tabs(
-            ['Number of Reviews', 'Maximum Number of Reviews', 'Review Scores'])
-        with tab1:
-            number_of_reviews = feature.feature('number_of_reviews')
-            plotly.vertical_bar_chart(df=number_of_reviews, x='y', y='count', text='percentage',
-                                      color='#5D9A96', title='Number of Reviews', title_x=0.43)
-        with tab2:
-            max_number_of_reviews = feature.feature(
-                'number_of_reviews', order='number_of_reviews desc')
-            plotly.vertical_bar_chart(df=max_number_of_reviews, x='y', y='count', text='percentage',
-                                      color='#5D9A96', title='Maximum Number of Reviews', title_x=0.35)
-        with tab3:
-            review_scores = feature.feature('review_scores')
-            plotly.vertical_bar_chart(df=review_scores, x='y', y='count', text='percentage',
-                                      color='#5D9A96', title='Review Scores', title_x=0.43)
-
-
-class host:
-
-    def countries_list():
-        conn = psycopg2.connect(host="localhost",
-                                user="postgres",
-                                password="sandeep",
-                                port=5432,
-                                database="PhonePe")
-        sand = conn.cursor()
-        sand.execute(f"""select distinct country
-                           from airbnb
-                           order by country asc;""")
-        conn.commit()
-        s = sand.fetchall()
-        i = [i for i in range(1, len(s)+1)]
-        data = pd.DataFrame(s, columns=['Country'], index=i)
-        data = data.rename_axis('S.No')
-        data.index = data.index.map(lambda x: '{:^{}}'.format(x, 10))
-        return data
-
-    def column_value(country, column_name, limit=10):
-        conn = psycopg2.connect(host="localhost",
-                                user="postgres",
-                                password="sandeep",
-                                port=5432,
-                                database="PhonePe")
-        sand = conn.cursor()
-        sand.execute(f"""select {column_name}, count({column_name}) as count
-                           from airbnb
-                           where country='{country}'
-                           group by {column_name}
-                           order by count desc
-                           limit {limit};""")
-        conn.commit()
-        s = sand.fetchall()
-        data = pd.DataFrame(s, columns=[column_name, 'count'])
-        return data[column_name].values.tolist()
-
-    def column_value_names(country, column_name, order='desc', limit=10):
-        conn = psycopg2.connect(host="localhost",
-                                user="postgres",
-                                password="sandeep",
-                                port=5432,
-                                database="PhonePe")
-        sand = conn.cursor()
-        sand.execute(f"""select {column_name}, count({column_name}) as count
-                           from airbnb
-                           where country='{country}'
-                           group by {column_name}
-                           order by {column_name} {order}
-                           limit {limit};""")
-        conn.commit()
-        s = sand.fetchall()
-        data = pd.DataFrame(s, columns=[column_name, 'count'])
-        return data[column_name].values.tolist()
-
-    def column_value_count_not_specified(country, column_name, limit=10):
-        conn = psycopg2.connect(host="localhost",
-                                user="postgres",
-                                password="sandeep",
-                                port=5432,
-                                database="PhonePe")
-        sand = conn.cursor()
-        sand.execute(f"""select {column_name}, count({column_name}) as count
-                           from airbnb
-                           where country='{country}' and {column_name}!='Not Specified'
-                           group by {column_name}
-                           order by count desc
-                           limit {limit};""")
-        conn.commit()
-        s = sand.fetchall()
-        data = pd.DataFrame(s, columns=[column_name, 'count'])
-        return data[column_name].values.tolist()
-
-    def host(country, column_name, column_value, limit=10):
-        conn = psycopg2.connect(host="localhost",
-                                user="postgres",
-                                password="sandeep",
-                                port=5432,
-                                database="PhonePe")
-        sand = conn.cursor()
-        sand.execute(f"""select distinct host_id, count(host_id) as count
-                           from airbnb
-                           where country='{country}' and {column_name}='{column_value}'
-                           group by host_id
-                           order by count desc
-                           limit {limit};""")
-        conn.commit()
-        s = sand.fetchall()
-        i = [i for i in range(1, len(s)+1)]
-        data = pd.DataFrame(s, columns=['host_id', 'count'], index=i)
-        data = data.rename_axis('S.No')
-        data.index = data.index.map(lambda x: '{:^{}}'.format(x, 10))
-        data['percentage'] = data['count'].apply(
-            lambda x: str('{:.2f}'.format(x/55.55)) + '%')
-        data['y'] = data['host_id'].apply(lambda x: str(x)+'`')
-        return data
-
-    def main(values, label):
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            a = str(values) + '_column_value_list'
-            b = str(values) + '_column_value'
-
-            a = host.column_value(country=country, column_name=values)
-            b = st.selectbox(label=label, options=a)
-
-            values = host.host(country=country, column_name=values,
-                               column_value=b)
-            return values
-
-    def main_min(values, label):
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            a = str(values) + '_column_value_list'
-            b = str(values) + '_column_value'
-
-            a = host.column_value_names(
-                country=country, column_name=values, order='asc')
-            b = st.selectbox(label=label, options=a)
-
-            values = host.host(country=country, column_name=values,
-                               column_value=b)
-            return values
-
-    def main_max(values, label):
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            a = str(values) + '_column_value_list'
-            b = str(values) + '_column_value'
-
-            a = host.column_value_names(
-                country=country, column_name=values, order='desc')
-            b = st.selectbox(label=label, options=a)
-
-            values = host.host(country=country, column_name=values,
-                               column_value=b)
-            return values
-
-    def not_specified(values, label):
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            a = str(values) + '_column_value_list'
-            b = str(values) + '_column_value'
-
-            a = host.column_value_count_not_specified(
-                country=country, column_name=values)
-            b = st.selectbox(label=label, options=a)
-
-            values = host.host(country=country, column_name=values,
-                               column_value=b)
-            return values
-
-    def host_analysis():
-
-        # vertical_bar chart
-        property_type = host.main(
-            values='property_type', label='Property Type')
-        plotly.vertical_bar_chart(df=property_type, x='y', y='count', text='percentage',
-                                  color='#5D9A96', title='Property Type', title_x=0.45)
-
-        # vertical_bar chart
-        tab1, tab2 = st.tabs(['Room Type', 'Bed Type'])
-        with tab1:
-            room_type = host.main(values='room_type', label='')
-            plotly.vertical_bar_chart(df=room_type, x='y', y='count', text='percentage',
-                                      color='#5cb85c', title='Room Type', title_x=0.45)
-        with tab2:
-            bed_type = host.main(values='bed_type', label='')
-            plotly.vertical_bar_chart(df=bed_type, x='y', y='count', text='percentage',
-                                      color='#5cb85c', title='Bed Type', title_x=0.45)
-
-        # vertical_bar chart
-        tab1, tab2 = st.tabs(['Minimum Nights', 'Maximum Nights'])
-        with tab1:
-            minimum_nights = host.main(values='minimum_nights', label='')
-            plotly.vertical_bar_chart(df=minimum_nights, x='y', y='count', text='percentage',
-                                      color='#5D9A96', title='Minimum Nights', title_x=0.45)
-        with tab2:
-            maximum_nights = host.main(values='maximum_nights', label='')
-            plotly.vertical_bar_chart(df=maximum_nights, x='y', y='count', text='percentage',
-                                      color='#5D9A96', title='Maximum Nights', title_x=0.45)
-
-        # vertical_bar chart
-        cancellation_policy = host.main(
-            values='cancellation_policy', label='Cancellation Policy')
-        plotly.vertical_bar_chart(df=cancellation_policy, x='y', y='count', text='percentage',
-                                  color='#5cb85c', title='Cancellation Policy', title_x=0.45)
-
-        # vertical_bar chart
-        tab1, tab2 = st.tabs(
-            ['Minimum Accommodates', 'Maximum Accommodates'])
-        with tab1:
-            minimum_accommodates = host.main_min(
-                values='accommodates', label='')
-            plotly.vertical_bar_chart(df=minimum_accommodates, x='y', y='count', text='percentage',
-                                      color='#5D9A96', title='Minimum Accommodates', title_x=0.45)
-        with tab2:
-            maximum_accommodates = host.main_max(
-                values='accommodates', label='')
-            plotly.vertical_bar_chart(df=maximum_accommodates, x='y', y='count', text='percentage',
-                                      color='#5D9A96', title='Maximum Accommodates', title_x=0.45)
-
-        # vertical_bar chart
-        tab1, tab2, tab3, tab4 = st.tabs(
-            ['Bedrooms', 'Minimum Beds', 'Maximum Beds', 'Bathrooms'])
-        with tab1:
-            bedrooms = host.main(values='bedrooms', label='')
-            plotly.vertical_bar_chart(df=bedrooms, x='y', y='count', text='percentage',
-                                      color='#5cb85c', title='Bedrooms', title_x=0.45)
-        with tab2:
-            minimum_beds = host.main_min(values='beds', label='')
-            plotly.vertical_bar_chart(df=minimum_beds, x='y', y='count', text='percentage',
-                                      color='#5cb85c', title='Minimum Beds', title_x=0.45)
-        with tab3:
-            maximum_beds = host.main_max(values='beds', label='')
-            plotly.vertical_bar_chart(df=maximum_beds, x='y', y='count', text='percentage',
-                                      color='#5cb85c', title='Maximum Beds', title_x=0.45)
-        with tab4:
-            bathrooms = host.main(values='bathrooms', label='')
-            plotly.vertical_bar_chart(df=bathrooms, x='y', y='count', text='percentage',
-                                      color='#5cb85c', title='Bathrooms', title_x=0.45)
-
-        # vertical_bar chart
-        tab1, tab2, tab3, tab4 = st.tabs(
-            ['Price', 'Minimum Price', 'Maximum Price', 'Cleaning Fee'])
-        with tab1:
-            price = host.main(values='price', label='')
-            plotly.vertical_bar_chart(df=price, x='y', y='count', text='percentage',
-                                      color='#5D9A96', title='Price', title_x=0.45)
-        with tab2:
-            minimum_price = host.main_min(values='price', label='')
-            plotly.vertical_bar_chart(df=minimum_price, x='y', y='count', text='percentage',
-                                      color='#5D9A96', title='Minimum Price', title_x=0.45)
-        with tab3:
-            maximum_price = host.main_max(values='price', label='')
-            plotly.vertical_bar_chart(df=maximum_price, x='y', y='count', text='percentage',
-                                      color='#5D9A96', title='Maximum price', title_x=0.45)
-        with tab4:
-            cleaning_fee = host.not_specified(
-                values='cleaning_fee', label='')
-            plotly.vertical_bar_chart(df=cleaning_fee, x='y', y='count', text='percentage',
-                                      color='#5D9A96', title='Cleaning Fee', title_x=0.45)
-
-        # vertical_bar chart
-        tab1, tab2, tab3, tab4 = st.tabs(['Guests Included', 'Cost at Extra People',
-                                          'Minimum Cost at Extra People', 'Maximum Cost at Extra People'])
-        with tab1:
-            guests_included = host.main(values='guests_included', label='')
-            plotly.vertical_bar_chart(df=guests_included, x='y', y='count', text='percentage',
-                                      color='#5cb85c', title='Guests Included', title_x=0.45)
-        with tab2:
-            extra_people = host.main(values='extra_people', label='')
-            plotly.vertical_bar_chart(df=extra_people, x='y', y='count', text='percentage',
-                                      color='#5cb85c', title='Cost at Extra People', title_x=0.45)
-        with tab3:
-            extra_people_min_cost = host.main_min(
-                values='extra_people', label='')
-            plotly.vertical_bar_chart(df=extra_people_min_cost, x='y', y='count', text='percentage',
-                                      color='#5cb85c', title='Minimum Cost at Extra People', title_x=0.45)
-        with tab4:
-            extra_people_max_cost = host.main_max(
-                values='extra_people', label='')
-            plotly.vertical_bar_chart(df=extra_people_max_cost, x='y', y='count', text='percentage',
-                                      color='#5cb85c', title='Maximum Cost at Extra People', title_x=0.45)
-
-        # vertical_bar chart
-        tab1, tab2 = st.tabs(['Response Time', 'Response Rate'])
-        with tab1:
-            host_response_time = host.main(
-                values='host_response_time', label='')
-            plotly.vertical_bar_chart(df=host_response_time, x='y', y='count', text='percentage',
-                                      color='#5D9A96', title='Response Time', title_x=0.45)
-        with tab2:
-            host_response_rate = host.not_specified(
-                values='host_response_rate', label='')
-            plotly.vertical_bar_chart(df=host_response_rate, x='y', y='count', text='percentage',
-                                      color='#5D9A96', title='Response Rate', title_x=0.45)
-
-        # vertical_bar chart
-        tab1, tab2, tab3, tab4 = st.tabs(
-            ['Availability 30', 'Availability 60', 'Availability 90', 'Availability 365'])
-        with tab1:
-            availability_30 = host.main_max(
-                values='availability_30', label='')
-            plotly.vertical_bar_chart(df=availability_30, x='y', y='count', text='percentage',
-                                      color='#5cb85c', title='Availability of Next 30 Days', title_x=0.45)
-        with tab2:
-            availability_60 = host.main_max(
-                values='availability_60', label='')
-            plotly.vertical_bar_chart(df=availability_60, x='y', y='count', text='percentage',
-                                      color='#5cb85c', title='Availability of Next 60 Days', title_x=0.45)
-        with tab3:
-            availability_90 = host.main_max(
-                values='availability_90', label='')
-            plotly.vertical_bar_chart(df=availability_90, x='y', y='count', text='percentage',
-                                      color='#5cb85c', title='Availability of Next 90 Days', title_x=0.45)
-        with tab4:
-            availability_365 = host.main_max(
-                values='availability_365', label='')
-            plotly.vertical_bar_chart(df=availability_365, x='y', y='count', text='percentage',
-                                      color='#5cb85c', title='Availability of Next 365 Days', title_x=0.45)
-
-        # vertical_bar chart
-        tab1, tab2 = st.tabs(['Number of Reviews', 'Review Scores'])
-        with tab1:
-            number_of_reviews = host.main_max(
-                values='number_of_reviews', label='')
-            plotly.vertical_bar_chart(df=number_of_reviews, x='y', y='count', text='percentage',
-                                      color='#5D9A96', title='Number of Reviews', title_x=0.45)
-        with tab2:
-            review_scores = host.main_max(values='review_scores', label='')
-            plotly.vertical_bar_chart(df=review_scores, x='y', y='count', text='percentage',
-                                      color='#5D9A96', title='Review Scores', title_x=0.45)
-
 
 # streamlit title, background color and tab configuration
 streamlit_config()
@@ -915,10 +550,9 @@ st.write('')
 
 
 with st.sidebar:
-    image_url = 'https://raw.githubusercontent.com/gopiashokan/Airbnb-Analysis/main/airbnb_banner.jpg'
-    st.image(image_url, use_column_width=True)
 
-    option = option_menu(menu_title='', options=['Migrating to SQL', 'Features Analysis', 'Host Analysis', 'Exit'],
+
+    option = option_menu(menu_title='', options=['Migrating to SQL', 'Features Analysis', 'Exit'],
                          icons=['database-fill', 'list-task', 'person-circle', 'sign-turn-right-fill'])
     col1, col2, col3 = st.columns([0.26, 0.48, 0.26])
     with col2:
@@ -945,22 +579,6 @@ elif option == 'Features Analysis':
             st.info('SQL Database is Currently Empty')
 
 
-elif option == 'Host Analysis':
-    try:
-        st.write('')
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            countries_list = host.countries_list()
-            country = st.selectbox(label='Country', options=countries_list)
-        if country:
-            host.host_analysis()
-
-    except:
-        col1, col2 = st.columns(2)
-        with col1:
-            st.info('SQL Database is Currently Empty')
-
-
 elif option == 'Exit':
     st.write('')
     conn = psycopg2.connect(host="localhost",
@@ -973,5 +591,4 @@ elif option == 'Exit':
 
     st.success('Thank you for your time. Exiting the application')
     st.balloons()
-
 
