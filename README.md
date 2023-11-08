@@ -1,4 +1,3 @@
-# Airbnb_Analysis
 # Airbnb Data Analysis
 
 ## Domain
