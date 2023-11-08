@@ -8,8 +8,8 @@ This project delves into the Travel Industry, Property Management, and Tourism s
 The primary goal is to perform an in-depth analysis of Airbnb data utilizing MongoDB Atlas. The project focuses on data cleaning and preparation, developing interactive geospatial visualizations, and creating dynamic plots to uncover insights into pricing variations, availability patterns, and location-based trends.
 
 ### Airbnb Dashboard
-[Click here to view the interactive dashboard.](https://app.powerbi.com/links/KhzrX20jSZ?ctid=1f8ca2d2-8b29-4086-8354-e9b31ca9d140&pbi_source=linkShare)
-
+PowerBI [Click here to view the interactive dashboard.](https://app.powerbi.com/links/KhzrX20jSZ?ctid=1f8ca2d2-8b29-4086-8354-e9b31ca9d140&pbi_source=linkShare)
+Tableau [Click here to view the interactive dashboard.](https://public.tableau.com/app/profile/sandeep.r8535/viz/Book1_16992883991180/Dashboard1)
 ## Overview
 This project aims to perform an in-depth analysis of Airbnb data using MongoDB Atlas. It includes data cleaning, geospatial visualizations, and dynamic plots to gain insights into pricing variations, availability patterns, and location-based trends.
 
@@ -40,12 +40,18 @@ This project aims to perform an in-depth analysis of Airbnb data using MongoDB A
 
 ## Dashboard Snapshot
 
-![image](https://github.com/iamsandeeprSand/Airbnb_Analysis/assets/139530620/26aedaf8-194c-40b9-8918-220257955062)
-![image](https://github.com/iamsandeeprSand/Airbnb_Analysis/assets/139530620/d5ce445e-e6d1-49eb-9c5f-c06903863260)
-![image](https://github.com/iamsandeeprSand/Airbnb_Analysis/assets/139530620/883a2d69-aac7-46a7-83dd-c115fbcb6025)
-![image](https://github.com/iamsandeeprSand/Airbnb_Analysis/assets/139530620/010dd6eb-f54b-42df-a31a-9c63ca8f9689)
-![image](https://github.com/iamsandeeprSand/Airbnb_Analysis/assets/139530620/a7f22607-f481-49a2-9f03-8cf29c8566bd)
-![image](https://github.com/iamsandeeprSand/Airbnb_Analysis/assets/139530620/5419513b-a545-4a0f-a11b-8f1358a12be5)
+![image](https://github.com/iamsandeeprSand/Airbnb_Analysis/assets/139530620/6aa92940-f834-42bf-88b3-50fca7ae2d16)
+![image](https://github.com/iamsandeeprSand/Airbnb_Analysis/assets/139530620/2cd904d3-f429-4c86-b9b2-a213a503610c)
+![image](https://github.com/iamsandeeprSand/Airbnb_Analysis/assets/139530620/72da858f-222c-4b70-a840-4965612b0322)
+![image](https://github.com/iamsandeeprSand/Airbnb_Analysis/assets/139530620/725c853a-5058-4a84-ba56-3a20a026b94a)
+![image](https://github.com/iamsandeeprSand/Airbnb_Analysis/assets/139530620/7bdd2bab-d243-424f-a265-463628881eb8)
+![image](https://github.com/iamsandeeprSand/Airbnb_Analysis/assets/139530620/27214d36-18e4-4509-aae2-3b297f2aa697)
+![image](https://github.com/iamsandeeprSand/Airbnb_Analysis/assets/139530620/f88db7a1-1f16-4fb1-9ef9-294bf8e90f43)
+![image](https://github.com/iamsandeeprSand/Airbnb_Analysis/assets/139530620/de16c188-66a7-4471-8a2f-b28c9774e782)
+![image](https://github.com/iamsandeeprSand/Airbnb_Analysis/assets/139530620/dd480810-8939-4b44-9334-be7edd6b612c)
+![image](https://github.com/iamsandeeprSand/Airbnb_Analysis/assets/139530620/014699f3-f9cc-4cb4-97ab-4fa46bcd6995)
+![image](https://github.com/iamsandeeprSand/Airbnb_Analysis/assets/139530620/1e128c97-3cf2-40a5-99f7-efe6bce44dca)
+
 ![image](https://github.com/iamsandeeprSand/Airbnb_Analysis/assets/139530620/c9a64ee4-8834-4f2d-a28d-026585a49bb4)
 ![image](https://github.com/iamsandeeprSand/Airbnb_Analysis/assets/139530620/555a8362-6a0a-4319-94c9-ddc20ea6006e)
 ![image](https://github.com/iamsandeeprSand/Airbnb_Analysis/assets/139530620/6e1b215a-8bc5-4529-9b47-801e9fe39d17)
